@@ -32,7 +32,7 @@ try {
  const fill=new THREE.DirectionalLight(0xb2cbdc,1.1);fill.position.set(5,1,2);scene.add(fill);
  const rimLight=new THREE.PointLight(0xff591d,38,12,2);rimLight.position.set(3,0,-2);scene.add(rimLight);
  const {root,tire,rim,brake}=createPerformanceWheel();scene.add(root);
- function size(){const box=canvas.parentElement.getBoundingClientRect();renderer.setSize(box.width,box.height,false);camera.aspect=box.width/box.height;camera.updateProjectionMatrix();camera.position.z=innerWidth<700?6.35:innerWidth<1100?7.7:6.15;}
+ function size(){const box=canvas.parentElement.getBoundingClientRect();renderer.setSize(box.width,box.height,false);camera.aspect=box.width/box.height;camera.updateProjectionMatrix();camera.position.z=innerWidth<700?6.35:innerWidth<900?8.8:innerWidth<1100?7.7:6.15;}
  const resize=new ResizeObserver(size);resize.observe(canvas.parentElement);size();
  canvas.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;dragging=true;dragX=e.clientX;canvas.setPointerCapture(e.pointerId)});
  canvas.addEventListener('pointermove',e=>{if(dragging){dragAngle=clamp(dragAngle+(e.clientX-dragX)*.006,-.8,.8);dragX=e.clientX}});

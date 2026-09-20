@@ -6,3 +6,5 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.experience{height:100svh;min-height:740px}.stage{position:relative}.engineering{display:none}.reveal,.js-motion .reveal{opacity:1;transform:none;transition:none}*{animation:none!important;transition:none!important}}
 
 .header.scrolled{background:#0b1110f2}
+
+@media(min-width:701px) and (max-width:900px){.wheel-stage{right:-15%;top:18%}}
