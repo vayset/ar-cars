@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+# Canonical business website: https://ar-cars-oudenaarde.fond-trail-0951.chatgpt.site

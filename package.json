@@ -1,0 +1,11 @@
+{
+  "name": "ar-cars-github-pages",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/export.mjs"
+  },
+  "dependencies": {
+    "cheerio": "1.1.2"
+  }
+}
