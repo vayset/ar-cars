@@ -1,6 +1,13 @@
 import {build} from 'esbuild';
-import {copyFile,mkdir} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {copyFile,mkdir,readFile,writeFile,readdir,unlink} from 'node:fs/promises';
 await mkdir('docs/experience',{recursive:true});
-await build({entryPoints:['source/experience/experience.js'],outfile:'docs/experience/experience.js',bundle:true,format:'esm',minify:true,target:'es2022',legalComments:'eof'});
-for(const f of ['index.html','experience.css','studio.png'])await copyFile('source/experience/'+f,'docs/experience/'+f);
-console.log('Interactive night concept built.');
+const result=await build({entryPoints:['source/experience/experience.js'],bundle:true,format:'esm',minify:true,target:'es2022',legalComments:'eof',write:false});
+const code=result.outputFiles[0].contents;
+const name='experience-'+createHash('sha256').update(code).digest('hex').slice(0,12)+'.js';
+for(const file of await readdir('docs/experience'))if(/^experience(?:-[a-f0-9]+)?\.js$/.test(file)&&file!==name)await unlink('docs/experience/'+file);
+await writeFile('docs/experience/'+name,code);
+const html=(await readFile('source/experience/index.html','utf8')).replace('src="./experience.js"','src="./'+name+'"');
+await writeFile('docs/experience/index.html',html);
+for(const f of ['experience.css','studio.png'])await copyFile('source/experience/'+f,'docs/experience/'+f);
+console.log('Interactive night concept built with a versioned bundle.');
