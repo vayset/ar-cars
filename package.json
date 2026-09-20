@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/export.mjs && node scripts/build-experience.mjs",
+    "build": "node scripts/export.mjs",
     "build:experience": "node scripts/build-experience.mjs"
   },
   "dependencies": {

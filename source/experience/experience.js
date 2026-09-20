@@ -19,7 +19,7 @@ updateButton();
 toggle.addEventListener('click',()=>{paused=!paused;updateButton()});
 reduced.addEventListener('change',()=>{paused=reduced.matches;updateButton();document.documentElement.classList.toggle('js-motion',!reduced.matches);if(reduced.matches){opening.style.opacity='1';opening.style.transform='none';engineering.style.opacity='0';studio.style.opacity='.6';}});
 const viewObserver=new IntersectionObserver(([entry])=>visible=entry.isIntersecting,{rootMargin:'80px'});viewObserver.observe(section);
-function progress(){document.querySelector('.header').classList.toggle('scrolled',scrollY>30);scrollP=reduced.matches?0:clamp(-section.getBoundingClientRect().top/(section.offsetHeight-innerHeight),0,1);stage.style.setProperty('--p',scrollP.toFixed(3));}
+function progress(){document.querySelector('.site-header, .header').classList.toggle('scrolled',scrollY>30);scrollP=reduced.matches?0:clamp(-section.getBoundingClientRect().top/(section.offsetHeight-innerHeight),0,1);stage.style.setProperty('--p',scrollP.toFixed(3));}
 addEventListener('scroll',progress,{passive:true});addEventListener('resize',progress,{passive:true});progress();
 try {
  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'high-performance'});
