@@ -26,3 +26,9 @@ Review the changes in `docs`, then commit and push. The exporter copies only exp
 ## Photography
 
 Garage photographs and branding were supplied for this website. Vehicle images are demonstration illustrations; attribution and licensing details appear on the image credits page. Font licenses are preserved under `docs/fonts`.
+
+## Night premium concept
+
+`/experience/` is an interactive art-direction preview with a procedural Three.js wheel. Scroll separates tire, alloy and brake; desktop pointer dragging changes the viewing angle. Motion can be paused and the system reduced-motion preference is respected. Garage, inventory and contact links still lead to the working site. The existing home page is preserved for comparison.
+
+Rebuild only this concept with `npm run build:experience`. Its source is in `source/experience`; the studio background is AI-generated illustrative imagery, not a vehicle offered for sale. Real workshop photographs remain in the workshop section. The 3D assembly is a visual illustration rather than a vehicle-specific technical model. Three.js is bundled locally; no third-party scripts are loaded at runtime.
