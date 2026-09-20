@@ -33,7 +33,7 @@ export function createPerformanceWheel() {
  // Molded sidewall lettering is restrained and dark, like embossed rubber.
  const sideLabel=document.createElement('canvas');sideLabel.width=sideLabel.height=1024;const s=sideLabel.getContext('2d');
  function arcText(text,center,r,font){s.font=font;s.fillStyle='#3e4541';s.textAlign='center';s.textBaseline='middle';const step=.035;const begin=center-(text.length-1)*step/2;for(let i=0;i<text.length;i++){const a=begin+i*step;s.save();s.translate(512+Math.cos(a)*r,512+Math.sin(a)*r);s.rotate(a+Math.PI/2);s.fillText(text[i],0,0);s.restore();}}
- arcText('PERFORMANCE',-Math.PI/2,476,'600 22px Arial');arcText('255 / 35 ZR 20',Math.PI/2,476,'500 18px Arial');arcText('SPORT',Math.PI,479,'600 16px Arial');
+ arcText('PERFORMANCE',-Math.PI/2,476,'600 22px Arial');arcText('295 / 30 ZR 20',Math.PI/2,476,'500 18px Arial');arcText('SPORT',Math.PI,479,'600 16px Arial');
  const sideTex=new THREE.CanvasTexture(sideLabel);sideTex.colorSpace=THREE.SRGBColorSpace;
  mesh(new THREE.RingGeometry(1.205,1.38,192),new THREE.MeshStandardMaterial({map:sideTex,transparent:true,depthWrite:false,roughness:.85,metalness:0,polygonOffset:true,polygonOffsetFactor:-1}),tire,.326);
  // Thin polished rim flange and gloss anthracite barrel, sized for a low-profile tire.
@@ -64,12 +64,49 @@ export function createPerformanceWheel() {
  for(let i=0;i<64;i++){const a=i/64*Math.PI*2;dummy.position.set(Math.sin(a)*.775,Math.cos(a)*.775,-.162);dummy.rotation.set(0,0,-a+.12);dummy.updateMatrix();vents.setMatrixAt(i,dummy.matrix);}brake.add(vents);
  cylinder(.43,.085,forged,brake,-.10);ring(.425,.006,machined,brake,-.053);
  for(let i=0;i<10;i++){const a=i/10*Math.PI*2;const fastener=cylinder(.018,.012,machined,brake,-.05,6);fastener.position.x=Math.sin(a)*.38;fastener.position.y=Math.cos(a)*.38;}
- // Compact multi-piston caliper with a curved body, raised central bridge and details.
- const c=new THREE.Shape();c.moveTo(-.12,-.37);c.quadraticCurveTo(-.2,-.3,-.19,-.19);c.lineTo(-.19,.19);c.quadraticCurveTo(-.19,.32,-.10,.39);c.quadraticCurveTo(.12,.46,.17,.3);c.lineTo(.17,-.28);c.quadraticCurveTo(.12,-.44,-.12,-.37);c.closePath();
- const cal=mesh(new THREE.ExtrudeGeometry(c,{depth:.18,bevelEnabled:true,bevelSegments:5,bevelSize:.025,bevelThickness:.025,curveSegments:18}),caliperMat,brake,-.13);cal.position.x=.92;cal.rotation.z=-.13;
- for(const y of [-.24,.24]){const screw=cylinder(.019,.012,forged,cal,.215,6);screw.position.y=y;}
- const bridge=mesh(new THREE.BoxGeometry(.045,.48,.028),caliperMat,cal,.215);bridge.position.x=-.11;
- const text=document.createElement('canvas');text.width=128;text.height=512;const t=text.getContext('2d');t.translate(64,256);t.rotate(-Math.PI/2);t.font='600 44px Arial';t.textAlign='center';t.fillStyle='#efece4';t.fillText('A.R. CARS',0,15);const textTex=new THREE.CanvasTexture(text);textTex.colorSpace=THREE.SRGBColorSpace;mesh(new THREE.PlaneGeometry(.11,.44),new THREE.MeshBasicMaterial({map:textTex,transparent:true,depthWrite:false}),cal,.213);
+ // Fixed six-piston caliper: separate inboard/outboard castings, an open rotor
+ // passage, contoured pads and two bridges outside the disc circumference.
+ const cal=new THREE.Group();cal.position.x=.9;cal.rotation.z=-.08;brake.add(cal);
+ const padMat=new THREE.MeshStandardMaterial({color:0x292824,roughness:.97,metalness:.12});
+ const fastenerMat=new THREE.MeshStandardMaterial({color:0xaaaead,roughness:.27,metalness:.92});
+ function bodyOutline(){const c=new THREE.Shape();c.moveTo(-.10,-.44);c.bezierCurveTo(-.19,-.35,-.20,-.24,-.18,-.13);c.quadraticCurveTo(-.15,-.01,-.18,.10);c.bezierCurveTo(-.2,.27,-.14,.43,-.04,.47);c.quadraticCurveTo(.065,.515,.13,.412);c.bezierCurveTo(.19,.29,.213,.14,.219,.01);c.bezierCurveTo(.203,-.17,.16,-.37,.075,-.453);c.quadraticCurveTo(-.015,-.502,-.10,-.44);return c;}
+ function castBody(z,depth){return mesh(new THREE.ExtrudeGeometry(bodyOutline(),{depth,bevelEnabled:true,bevelSegments:5,bevelSize:.018,bevelThickness:.015,curveSegments:20}),caliperMat,cal,z);}
+ castBody(-.033,.122);castBody(-.427,.14);
+ // A sculpted raised rib catches light instead of a single flat rectangular face.
+ const rib=new THREE.Shape();rib.moveTo(-.035,-.365);rib.quadraticCurveTo(.04,-.4,.087,-.305);rib.bezierCurveTo(.16,-.13,.157,.15,.078,.335);rib.quadraticCurveTo(.015,.42,-.04,.344);rib.quadraticCurveTo(.022,0,-.035,-.365);
+ mesh(new THREE.ExtrudeGeometry(rib,{depth:.02,bevelEnabled:true,bevelSegments:4,bevelSize:.018,bevelThickness:.014,curveSegments:16}),caliperMat,cal,.096);
+ // Two short shoulders join the castings beyond the edge of the spinning rotor.
+ for(const y of [-.27,.27]){
+   const sh=new THREE.Shape();sh.moveTo(-.037,-.07);sh.lineTo(.037,-.07);sh.quadraticCurveTo(.049,-.07,.049,-.05);sh.lineTo(.049,.05);sh.quadraticCurveTo(.049,.07,.035,.07);sh.lineTo(-.035,.07);sh.quadraticCurveTo(-.049,.07,-.049,.05);sh.lineTo(-.049,-.05);sh.quadraticCurveTo(-.049,-.07,-.037,-.07);
+   const bridge=mesh(new THREE.ExtrudeGeometry(sh,{depth:.475,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:3}),caliperMat,cal,-.406);bridge.position.x=.173;bridge.position.y=y;
+ }
+ // Friction pads follow the rotor's curve and sit either side of its swept face.
+ const pad=new THREE.Shape();pad.absarc(0,0,1.004,-.425,.425,false);pad.lineTo(Math.cos(.425)*.793,Math.sin(.425)*.793);pad.absarc(0,0,.793,.425,-.425,true);pad.closePath();
+ const pg=new THREE.ExtrudeGeometry(pad,{depth:.029,bevelEnabled:false,curveSegments:36});mesh(pg,padMat,brake,-.094);mesh(pg,padMat,brake,-.253);
+ // Three stepped piston housings on the rear casting; metal caps are recessed.
+ for(const [y,r] of [[-.255,.085],[0,.104],[.255,.091]]){
+   const boss=cylinder(r,.07,caliperMat,cal,-.448,48);boss.position.x=-.043;boss.position.y=y;
+   const cap=cylinder(r*.70,.012,forged,cal,-.486,48);cap.position.x=-.043;cap.position.y=y;
+   const lip=ring(r*.79,.005,fastenerMat,cal,-.490);lip.position.x=-.043;lip.position.y=y;
+ }
+ // Small recessed fixings, rather than large decorative holes.
+ for(const y of [-.355,.355]){
+   const seat=cylinder(.028,.009,rotorEdge,cal,.115,32);seat.position.set(.047,y,.115);
+   const bolt=cylinder(.018,.008,fastenerMat,cal,.122,6);bolt.position.set(.047,y,.122);
+ }
+ // Pad retaining spring on the inward edge of the outboard casting.
+ const springPoints=[new THREE.Vector3(-.153,-.2,.13),new THREE.Vector3(-.185,-.11,.145),new THREE.Vector3(-.12,0,.159),new THREE.Vector3(-.185,.11,.145),new THREE.Vector3(-.153,.2,.13)];
+ mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(springPoints),24,.007,6,false),fastenerMat,cal);
+ // Crossover pipe and a bleed screw, visible when the assembly opens up.
+ const pipePoints=[new THREE.Vector3(.055,.387,.079),new THREE.Vector3(.065,.463,.043),new THREE.Vector3(.083,.468,-.20),new THREE.Vector3(.061,.441,-.4),new THREE.Vector3(.038,.365,-.441)];
+ mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pipePoints),32,.011,8,false),fastenerMat,cal);
+ const nut=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,.035,6),fastenerMat);nut.position.set(-.044,.465,-.351);cal.add(nut);
+ const nipple=new THREE.Mesh(new THREE.CylinderGeometry(.011,.014,.037,12),fastenerMat);nipple.position.set(-.044,.495,-.351);cal.add(nipple);
+ const cap=new THREE.Mesh(new THREE.CapsuleGeometry(.014,.018,4,8),rubber);cap.position.set(-.044,.519,-.351);cal.add(cap);
+ const text=document.createElement('canvas');text.width=128;text.height=512;const t=text.getContext('2d');t.translate(64,256);t.rotate(-Math.PI/2);t.font='600 41px Arial';t.textAlign='center';t.fillStyle='#ece9e0';t.fillText('A.R. CARS',0,14);const textTex=new THREE.CanvasTexture(text);textTex.colorSpace=THREE.SRGBColorSpace;
+ const wordmark=mesh(new THREE.PlaneGeometry(.08,.34),new THREE.MeshBasicMaterial({map:textTex,transparent:true,depthWrite:false}),cal,.135);wordmark.position.x=.063;
+ // A substantially wider contact patch and barrel, with the existing low sidewall.
+ tire.scale.z=1.6;rim.scale.z=1.6;
  root.rotation.set(.09,-.43,-.07);
  return {root,tire,rim,brake};
 }
